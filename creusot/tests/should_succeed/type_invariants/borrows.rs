@@ -47,6 +47,24 @@ pub fn tuple(mut x: (NonZero, &mut NonZero)) {
     // here we resolve x and thus assert x.inv() which is not provable
 }
 
+struct Foo<T>(T);
+
+#[trusted]
+impl<T> Resolve for Foo<T> {
+    #[predicate]
+    fn resolve(self) -> bool {
+        self.0.resolve()
+    }
+}
+
+fn foo() {
+    let x = NonZero(3);
+    let z = &mut x;
+    *z.0 = 0;
+    let _ = Foo(z);
+    proof_assert! { false };
+}
+
 #[requires(x.1.0@ < i32::MAX@)]
 #[requires(x.1.0@ != -1)]
 pub fn partial_move(x: (NonZero, &mut NonZero)) {
