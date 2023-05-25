@@ -337,8 +337,13 @@ pub(crate) fn translate_tydecl(
         tys.push(build_ty_decl(ctx, &mut names, *did));
     }
 
+    let invariants =
+        bg.iter().map(|did| build_invariant(ctx, &mut names, *did)).collect::<Vec<_>>();
+
     let (mut decls, _) = names.to_clones(ctx);
     decls.push(Decl::TyDecl(TyDecl::Adt { tys: tys.clone() }));
+    decls.extend(invariants);
+
     let mut modls = vec![Module { name: name.clone(), decls }];
     for did in bg {
         if *did == repr {
@@ -586,6 +591,82 @@ pub(crate) fn build_closure_accessor<'tcx>(
     };
 
     (pre_sig, term)
+}
+
+fn build_invariant<'tcx>(
+    ctx: &mut Why3Generator<'tcx>,
+    names: &mut CloneMap<'tcx>,
+    did: DefId,
+) -> Decl {
+    let adt = ctx.tcx.adt_def(did);
+    let substs = InternalSubsts::identity_for_item(ctx.tcx, did);
+
+    let ty_name = translate_ty_name(ctx, did).name;
+    let inv_name = Ident::from(format!("I_{}", &*ty_name));
+
+    let mut branches = vec![];
+    for var_def in adt.variants().iter() {
+        let mut pats = vec![];
+        let mut exp = Exp::mk_true();
+        for field_def in var_def.fields.iter() {
+            let field_name: Ident = field_def.name.as_str().into();
+
+            if let Some(field_inv) =
+                field_invariant(ctx, names, field_def, substs, field_name.clone())
+            {
+                pats.push(Pattern::VarP(field_name));
+                exp = exp.log_and(field_inv);
+            } else {
+                pats.push(Pattern::Wildcard);
+            }
+        }
+
+        let var_name = names.constructor(var_def.def_id, substs);
+        branches.push((Pattern::ConsP(var_name, pats), exp));
+    }
+
+    let discr_exp = Exp::Match(Box::new(Exp::pure_var("self".into())), branches);
+
+    let this = MlT::TApp(
+        Box::new(MlT::TConstructor(ty_name.clone().into())),
+        ty_param_names(ctx.tcx, did).map(MlT::TVar).collect(),
+    );
+
+    let sig = Signature {
+        name: inv_name,
+        attrs: Vec::new(),
+        args: vec![Binder::typed("self".into(), this.clone())],
+        retty: Some(MlT::Bool),
+        contract: Contract::new(),
+    };
+
+    Decl::Let(LetDecl {
+        sig,
+        rec: false,
+        ghost: false,
+        body: discr_exp,
+        kind: Some(LetKind::Function),
+    })
+}
+
+fn field_invariant<'tcx>(
+    ctx: &mut Why3Generator<'tcx>,
+    names: &mut CloneMap<'tcx>,
+    field: &FieldDef,
+    substs: SubstsRef<'tcx>,
+    field_name: Ident,
+) -> Option<Exp> {
+    let ty = field.ty(ctx.tcx, substs);
+    // let ty = ctx.try_normalize_erasing_regions(param_env, ty).unwrap_or(ty);
+
+    // if type has a why3 decl, use generated inv, otherwise perform trait resolution
+    if let Adt(adt_def, adt_substs) = ty.kind() {
+        let field_inv = names.ty_inv(adt_def.did(), adt_substs);
+        let inv_exp = Exp::impure_qvar(field_inv).app_to(Exp::pure_var(field_name));
+        Some(inv_exp)
+    } else {
+        None
+    }
 }
 
 pub(crate) fn intty_to_ty(names: &mut CloneMap<'_>, ity: &rustc_middle::ty::IntTy) -> MlT {

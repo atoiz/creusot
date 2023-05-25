@@ -337,6 +337,11 @@ impl<'tcx> CloneMap<'tcx> {
         clone.qname_ident(name.into())
     }
 
+    pub(crate) fn ty_inv(&mut self, def_id: DefId, subst: SubstsRef<'tcx>) -> QName {
+        let name = format!("I_{}", &*item_name(self.tcx, def_id, Namespace::TypeNS));
+        self.insert(def_id, subst).qname_ident(name.into())
+    }
+
     fn self_key(&self) -> (DefId, SubstsRef<'tcx>) {
         let subst = match self.tcx.def_kind(self.self_id) {
             DefKind::Closure => match self.tcx.type_of(self.self_id).subst_identity().kind() {
