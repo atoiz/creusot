@@ -101,14 +101,8 @@ pub(crate) fn is_tyinv_trivial<'tcx>(
     let mut visited_adts = IndexSet::new();
     let mut stack = vec![ty];
     while let Some(ty) = stack.pop() {
-        let user_inv = resolve_user_inv(tcx, ty, param_env)
-            .map(|(uinv_did, _)| util::is_structural_ty_inv(tcx, uinv_did));
-
-        // IF there is a user invariant AND it is not structural
-        // OR ty is a param or alias AND we default to considering them trivial
-        if user_inv == Some(false)
-            || (!default_trivial && matches!(ty.kind(), TyKind::Param(_) | TyKind::Alias(_, _)))
-        {
+        let user_inv = resolve_user_inv(tcx, ty, param_env);
+        if let Some(ref user_inv) = user_inv && !user_inv.structural && user_inv.maybe_impl(!default_trivial) {
             return false;
         }
 
@@ -117,7 +111,7 @@ pub(crate) fn is_tyinv_trivial<'tcx>(
             TyKind::Tuple(tys) => stack.extend(*tys),
             TyKind::Adt(def, substs) if def.is_box() => stack.push(substs.type_at(0)),
             TyKind::Adt(def, substs)
-                if util::get_builtin(tcx, def.did()).is_some() || user_inv == Some(true) =>
+                if util::get_builtin(tcx, def.did()).is_some() || user_inv.is_some_and(|r| r.structural) =>
             {
                 // if the ADT has a structural user invariant, do not look into fields but only consider substs
                 stack.extend(substs.types())
@@ -210,10 +204,12 @@ fn build_inv_exp<'tcx>(
     }
 
     let user_inv = if mode == Mode::Axiom {
-        resolve_user_inv(ctx.tcx, ty, param_env).map(|(uinv_did, uinv_subst)| {
-            let inv_name = names.value(uinv_did, uinv_subst);
-            Exp::impure_qvar(inv_name).app(vec![Exp::pure_var(ident.clone())])
-        })
+        if let Some(user_inv) = resolve_user_inv(ctx.tcx, ty, param_env) && user_inv.maybe_impl(true) {
+            let inv_name = names.value(user_inv.did, user_inv.substs);
+            Some(Exp::impure_qvar(inv_name).app(vec![Exp::pure_var(ident.clone())]))
+        } else {
+            None
+        }
     } else {
         None
     };
@@ -237,10 +233,10 @@ fn build_inv_exp_struct<'tcx>(
 ) -> Option<Exp> {
     match ty.kind() {
         TyKind::Ref(_, ty, Mutability::Not) => {
-            build_inv_exp(ctx, names, ident, *ty, param_env, mode)
+            build_inv_exp(ctx, names, ident, *ty, param_env, Mode::Field)
         }
         TyKind::Ref(_, ty, Mutability::Mut) => {
-            let inv = build_inv_exp(ctx, names, "a".into(), *ty, param_env, mode)?;
+            let inv = build_inv_exp(ctx, names, "a".into(), *ty, param_env, Mode::Field)?;
             names.import_prelude_module(PreludeModule::Borrow);
 
             let mut inv_cur = inv.clone();
@@ -260,7 +256,9 @@ fn build_inv_exp_struct<'tcx>(
             let body = tys
                 .iter()
                 .enumerate()
-                .flat_map(|(i, t)| build_inv_exp(ctx, names, fields[i].clone(), t, param_env, mode))
+                .flat_map(|(i, t)| {
+                    build_inv_exp(ctx, names, fields[i].clone(), t, param_env, Mode::Field)
+                })
                 .reduce(|e1, e2| e1.log_and(e2))?;
 
             let pattern = Pattern::TupleP(fields.into_iter().map(Pattern::VarP).collect());
@@ -273,7 +271,7 @@ fn build_inv_exp_struct<'tcx>(
             build_inv_exp_seq(ctx, names, seq, param_env, *ty)
         }
         TyKind::Adt(adt_def, adt_subst) if adt_def.is_box() => {
-            build_inv_exp(ctx, names, ident, adt_subst.type_at(0), param_env, mode)
+            build_inv_exp(ctx, names, ident, adt_subst.type_at(0), param_env, Mode::Field)
         }
         TyKind::Adt(adt_def, adt_subst) if util::get_builtin(ctx.tcx, adt_def.did()).is_some() => {
             // should these be structural user invs?
@@ -396,26 +394,39 @@ fn build_inv_exp_adt<'tcx>(
     (!trivial).then(|| exp)
 }
 
+struct ResolveResult<'tcx> {
+    did: DefId,
+    substs: SubstsRef<'tcx>,
+    resolved: bool,
+    still_spec: bool,
+    structural: bool,
+}
+
+impl<'tcx> ResolveResult<'tcx> {
+    fn maybe_impl(&self, default: bool) -> bool {
+        self.resolved || (default && self.still_spec)
+    }
+}
+
 fn resolve_user_inv<'tcx>(
     tcx: TyCtxt<'tcx>,
     ty: Ty<'tcx>,
     param_env: ParamEnv<'tcx>,
-) -> Option<(DefId, SubstsRef<'tcx>)> {
-    let trait_did = tcx.get_diagnostic_item(Symbol::intern("creusot_invariant_user"))?;
+) -> Option<ResolveResult<'tcx>> {
+    let did = tcx.get_diagnostic_item(Symbol::intern("creusot_invariant_user"))?;
+    let substs = tcx.mk_substs(&[GenericArg::from(ty)]);
 
-    // eprintln!("resolving inv for {ty}, {param_env:?}");
-    let (impl_did, subst) = traits::resolve_assoc_item_opt(
-        tcx,
-        param_env,
-        trait_did,
-        tcx.mk_substs(&[GenericArg::from(ty)]),
-    )?;
-    let subst = tcx.try_normalize_erasing_regions(param_env, subst).unwrap_or(subst);
+    let (did, substs, resolved) = match traits::resolve_assoc_item_opt(tcx, param_env, did, substs)
+    {
+        Some((did, substs)) => {
+            let substs = tcx.try_normalize_erasing_regions(param_env, substs).unwrap_or(substs);
+            (did, substs, true)
+        }
+        None => (did, substs, false),
+    };
 
-    // if inv resolved to the default impl and is not specializable, ignore
-    if impl_did == trait_did && !traits::still_specializable(tcx, param_env, impl_did, subst) {
-        None
-    } else {
-        Some((impl_did, subst))
-    }
+    let still_spec = traits::still_specializable(tcx, param_env, did, substs);
+    let structural = resolved && util::is_structural_ty_inv(tcx, did);
+
+    Some(ResolveResult { did, substs, resolved, still_spec, structural })
 }
