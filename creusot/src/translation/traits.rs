@@ -70,7 +70,8 @@ impl<'tcx> TranslationCtx<'tcx> {
 
             // If there is no contract to refine, skip this item
             if !self.tcx.def_kind(trait_item).is_fn_like()
-                || self.sig(trait_item).contract.is_empty()
+                || (self.sig(trait_item).contract.ensures.is_empty()
+                    && self.sig(impl_item).contract.requires.is_empty())
             {
                 continue;
             }

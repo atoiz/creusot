@@ -2075,8 +2075,53 @@ module ListReversalLasso_Impl0
   
 end
 module ListReversalLasso_Impl1
-  
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl11_Max as Max0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface as ShallowModel0 with
+    type t = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Logic_Ops_Impl1_IndexLogic as IndexLogic1 with
+    type t = usize,
+    type s = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
+  use ListReversalLasso_Memory_Type as ListReversalLasso_Memory_Type
+  clone ListReversalLasso_Impl0_IndexLogic as IndexLogic0 with
+    function IndexLogic0.index_logic = IndexLogic1.index_logic
+  clone ListReversalLasso_Impl3_NonnullPtr as NonnullPtr0 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  goal index_refn : [#"../list_reversal_lasso.rs" 30 4 30 35] forall self : ListReversalLasso_Memory_Type.t_memory . forall index : usize . NonnullPtr0.nonnull_ptr self index /\ (forall result : usize . true)
 end
 module ListReversalLasso_Impl2
-  
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl11_Max as Max0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface as ShallowModel0 with
+    type t = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Logic_Ops_Impl1_IndexLogic as IndexLogic1 with
+    type t = usize,
+    type s = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
+  use ListReversalLasso_Memory_Type as ListReversalLasso_Memory_Type
+  clone ListReversalLasso_Impl0_IndexLogic as IndexLogic0 with
+    function IndexLogic0.index_logic = IndexLogic1.index_logic
+  clone ListReversalLasso_Impl3_NonnullPtr as NonnullPtr0 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  goal index_mut_refn : [#"../list_reversal_lasso.rs" 41 4 41 47] forall self : borrowed (ListReversalLasso_Memory_Type.t_memory) . forall index : usize . NonnullPtr0.nonnull_ptr ( * self) index /\ (forall result : borrowed usize . true)
 end
