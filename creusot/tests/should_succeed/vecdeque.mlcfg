@@ -155,6 +155,7 @@ module Alloc_Collections_VecDeque_Impl4_WithCapacity_Interface
     axiom .
   val with_capacity (capacity : usize) : Alloc_Collections_VecDeque_VecDeque_Type.t_vecdeque t (Alloc_Alloc_Global_Type.t_global)
     ensures { [#"../../../../creusot-contracts/src/std/deque.rs" 59 26 59 44] Seq.length (ShallowModel0.shallow_model result) = 0 }
+    ensures { Inv0.inv result }
     
 end
 module CreusotContracts_Model_ShallowModel_ShallowModelTy_Type
@@ -272,6 +273,7 @@ module Alloc_Collections_VecDeque_Impl4_New_Interface
     axiom .
   val new (_1 : ()) : Alloc_Collections_VecDeque_VecDeque_Type.t_vecdeque t (Alloc_Alloc_Global_Type.t_global)
     ensures { [#"../../../../creusot-contracts/src/std/deque.rs" 56 26 56 44] Seq.length (ShallowModel0.shallow_model result) = 0 }
+    ensures { Inv0.inv result }
     
 end
 module CreusotContracts_Model_Impl7_ShallowModel_Stub

@@ -1343,74 +1343,74 @@ module SparseArray_Impl1_Set
   use seq.Seq
   use Core_Option_Option_Type as Core_Option_Option_Type
   use seq.Seq
-  clone CreusotContracts_Invariant_Inv_Interface as Inv14 with
+  clone CreusotContracts_Invariant_Inv_Interface as Inv15 with
     type t = Seq.seq (Core_Option_Option_Type.t_option t)
-  clone TyInv_Trivial as TyInv_Trivial14 with
+  clone TyInv_Trivial as TyInv_Trivial15 with
     type t = Seq.seq (Core_Option_Option_Type.t_option t),
-    predicate Inv0.inv = Inv14.inv,
+    predicate Inv0.inv = Inv15.inv,
     axiom .
-  clone CreusotContracts_Invariant_Inv_Interface as Inv13 with
+  clone CreusotContracts_Invariant_Inv_Interface as Inv14 with
     type t = Seq.seq usize
-  clone TyInv_Trivial as TyInv_Trivial13 with
+  clone TyInv_Trivial as TyInv_Trivial14 with
     type t = Seq.seq usize,
-    predicate Inv0.inv = Inv13.inv,
+    predicate Inv0.inv = Inv14.inv,
     axiom .
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Invariant_Inv_Interface as Inv12 with
+  clone CreusotContracts_Invariant_Inv_Interface as Inv13 with
     type t = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global)
-  clone TyInv_Trivial as TyInv_Trivial12 with
+  clone TyInv_Trivial as TyInv_Trivial13 with
     type t = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global),
+    predicate Inv0.inv = Inv13.inv,
+    axiom .
+  clone CreusotContracts_Invariant_Inv_Interface as Inv12 with
+    type t = borrowed usize
+  clone TyInv_Trivial as TyInv_Trivial12 with
+    type t = borrowed usize,
     predicate Inv0.inv = Inv12.inv,
     axiom .
   clone CreusotContracts_Invariant_Inv_Interface as Inv11 with
-    type t = borrowed usize
+    type t = borrowed (Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global))
   clone TyInv_Trivial as TyInv_Trivial11 with
-    type t = borrowed usize,
+    type t = borrowed (Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global)),
     predicate Inv0.inv = Inv11.inv,
     axiom .
+  use SparseArray_Sparse_Type as SparseArray_Sparse_Type
   clone CreusotContracts_Invariant_Inv_Interface as Inv10 with
-    type t = borrowed (Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global))
+    type t = SparseArray_Sparse_Type.t_sparse t
   clone TyInv_Trivial as TyInv_Trivial10 with
-    type t = borrowed (Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global)),
+    type t = SparseArray_Sparse_Type.t_sparse t,
     predicate Inv0.inv = Inv10.inv,
     axiom .
-  use SparseArray_Sparse_Type as SparseArray_Sparse_Type
   clone CreusotContracts_Invariant_Inv_Interface as Inv9 with
-    type t = SparseArray_Sparse_Type.t_sparse t
+    type t = usize
   clone TyInv_Trivial as TyInv_Trivial9 with
-    type t = SparseArray_Sparse_Type.t_sparse t,
+    type t = usize,
     predicate Inv0.inv = Inv9.inv,
     axiom .
   clone CreusotContracts_Invariant_Inv_Interface as Inv8 with
-    type t = usize
+    type t = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global)
   clone TyInv_Trivial as TyInv_Trivial8 with
-    type t = usize,
+    type t = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global),
     predicate Inv0.inv = Inv8.inv,
     axiom .
   clone CreusotContracts_Invariant_Inv_Interface as Inv7 with
-    type t = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global)
+    type t = Seq.seq t
   clone TyInv_Trivial as TyInv_Trivial7 with
-    type t = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global),
+    type t = Seq.seq t,
     predicate Inv0.inv = Inv7.inv,
     axiom .
   clone CreusotContracts_Invariant_Inv_Interface as Inv6 with
-    type t = Seq.seq t
+    type t = usize
   clone TyInv_Trivial as TyInv_Trivial6 with
-    type t = Seq.seq t,
+    type t = usize,
     predicate Inv0.inv = Inv6.inv,
     axiom .
   clone CreusotContracts_Invariant_Inv_Interface as Inv5 with
-    type t = usize
-  clone TyInv_Trivial as TyInv_Trivial5 with
-    type t = usize,
-    predicate Inv0.inv = Inv5.inv,
-    axiom .
-  clone CreusotContracts_Invariant_Inv_Interface as Inv4 with
     type t = borrowed (Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global))
-  clone TyInv_Trivial as TyInv_Trivial4 with
+  clone TyInv_Trivial as TyInv_Trivial5 with
     type t = borrowed (Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)),
-    predicate Inv0.inv = Inv4.inv,
+    predicate Inv0.inv = Inv5.inv,
     axiom .
   clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Invariant_Inv_Interface as Inv0 with
@@ -1420,7 +1420,7 @@ module SparseArray_Impl1_Set
     type a = Alloc_Alloc_Global_Type.t_global,
     predicate Inv0.inv = Inv0.inv,
     val Max0.mAX' = Max0.mAX',
-    predicate Inv1.inv = Inv6.inv,
+    predicate Inv1.inv = Inv7.inv,
     axiom .
   clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic1 with
     type t = t,
@@ -1428,30 +1428,30 @@ module SparseArray_Impl1_Set
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate Inv0.inv = Inv0.inv,
     val Max0.mAX' = Max0.mAX',
-    predicate Inv1.inv = Inv6.inv
+    predicate Inv1.inv = Inv7.inv
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface as ShallowModel6 with
     type t = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
-    predicate Inv0.inv = Inv12.inv,
+    predicate Inv0.inv = Inv13.inv,
     val Max0.mAX' = Max0.mAX',
-    predicate Inv1.inv = Inv13.inv,
+    predicate Inv1.inv = Inv14.inv,
     axiom .
   clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic0 with
     type t = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
     function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
-    predicate Inv0.inv = Inv12.inv,
+    predicate Inv0.inv = Inv13.inv,
     val Max0.mAX' = Max0.mAX',
-    predicate Inv1.inv = Inv13.inv
+    predicate Inv1.inv = Inv14.inv
   clone SparseArray_Impl1_IsElt as IsElt0 with
     type t = t,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone SparseArray_Impl0_ShallowModel as ShallowModel1 with
     type t = t,
-    predicate Inv0.inv = Inv9.inv,
+    predicate Inv0.inv = Inv10.inv,
     predicate IsElt0.is_elt = IsElt0.is_elt,
     function IndexLogic0.index_logic = IndexLogic1.index_logic,
-    predicate Inv1.inv = Inv14.inv,
+    predicate Inv1.inv = Inv15.inv,
     axiom .
   clone CreusotContracts_Model_Impl5_ShallowModel as ShallowModel7 with
     type t = SparseArray_Sparse_Type.t_sparse t,
@@ -1464,6 +1464,12 @@ module SparseArray_Impl1_Set
     type ShallowModelTy0.shallowModelTy = Seq.seq usize,
     function ShallowModel0.shallow_model = ShallowModel6.shallow_model
   use prelude.Ghost
+  clone CreusotContracts_Invariant_Inv_Interface as Inv4 with
+    type t = Ghost.ghost_ty ()
+  clone TyInv_Trivial as TyInv_Trivial4 with
+    type t = Ghost.ghost_ty (),
+    predicate Inv0.inv = Inv4.inv,
+    axiom .
   clone CreusotContracts_Invariant_Inv_Interface as Inv3 with
     type t = borrowed (SparseArray_Sparse_Type.t_sparse t)
   clone TyInv_Trivial as TyInv_Trivial3 with
@@ -1516,9 +1522,9 @@ module SparseArray_Impl1_Set
     function IndexLogic0.index_logic = IndexLogic0.index_logic,
     predicate Inv0.inv = Inv0.inv,
     val Max0.mAX' = Max0.mAX',
-    predicate Inv1.inv = Inv6.inv,
-    predicate Inv2.inv = Inv12.inv,
-    predicate Inv3.inv = Inv13.inv
+    predicate Inv1.inv = Inv7.inv,
+    predicate Inv2.inv = Inv13.inv,
+    predicate Inv3.inv = Inv14.inv
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve4 with
     type t = usize
   clone Alloc_Vec_Impl13_IndexMut_Interface as IndexMut1 with
@@ -1527,22 +1533,22 @@ module SparseArray_Impl1_Set
     type a = Alloc_Alloc_Global_Type.t_global,
     function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
-    predicate Inv0.inv = Inv10.inv,
-    predicate Inv1.inv = Inv5.inv,
+    predicate Inv0.inv = Inv11.inv,
+    predicate Inv1.inv = Inv6.inv,
     predicate HasValue0.has_value = HasValue1.has_value,
     function ShallowModel1.shallow_model = ShallowModel6.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere1.resolve_elswhere,
-    predicate Inv2.inv = Inv11.inv,
+    predicate Inv2.inv = Inv12.inv,
     type Output0.output = usize,
-    predicate Inv3.inv = Inv12.inv,
+    predicate Inv3.inv = Inv13.inv,
     val Max0.mAX' = Max0.mAX',
-    predicate Inv4.inv = Inv13.inv
+    predicate Inv4.inv = Inv14.inv
   clone CreusotContracts_Resolve_Resolve_Resolve_Interface as Resolve3 with
     type self = Ghost.ghost_ty ()
   clone SparseArray_Impl1_LemmaPermutation as LemmaPermutation0 with
     type t = t,
     predicate SparseInv0.sparse_inv = SparseInv0.sparse_inv,
-    predicate Inv0.inv = Inv9.inv,
+    predicate Inv0.inv = Inv10.inv,
     predicate IsElt0.is_elt = IsElt0.is_elt,
     axiom .
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve2 with
@@ -1553,10 +1559,10 @@ module SparseArray_Impl1_Set
     type a = Alloc_Alloc_Global_Type.t_global,
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
-    predicate Inv0.inv = Inv7.inv,
-    predicate Inv1.inv = Inv5.inv,
+    predicate Inv0.inv = Inv8.inv,
+    predicate Inv1.inv = Inv6.inv,
     predicate HasValue0.has_value = HasValue1.has_value,
-    predicate Inv2.inv = Inv8.inv,
+    predicate Inv2.inv = Inv9.inv,
     type Output0.output = usize
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve1 with
     type t = t
@@ -1568,8 +1574,8 @@ module SparseArray_Impl1_Set
     type a = Alloc_Alloc_Global_Type.t_global,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate Inv0.inv = Inv4.inv,
-    predicate Inv1.inv = Inv5.inv,
+    predicate Inv0.inv = Inv5.inv,
+    predicate Inv1.inv = Inv6.inv,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel3.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
@@ -1577,7 +1583,7 @@ module SparseArray_Impl1_Set
     type Output0.output = t,
     predicate Inv3.inv = Inv0.inv,
     val Max0.mAX' = Max0.mAX',
-    predicate Inv4.inv = Inv6.inv
+    predicate Inv4.inv = Inv7.inv
   let rec cfg set [#"../sparse_array.rs" 119 4 119 41] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (SparseArray_Sparse_Type.t_sparse t)) (i : usize) (v : t) : ()
     requires {[#"../sparse_array.rs" 113 15 113 35] SparseInv0.sparse_inv ( * self)}
     requires {[#"../sparse_array.rs" 114 15 114 31] UIntSize.to_int i < Seq.length (ShallowModel0.shallow_model self)}
@@ -1664,6 +1670,7 @@ module SparseArray_Impl1_Set
     goto BB12
   }
   BB12 {
+    assert { [@expl:type invariant] Inv4.inv _29 };
     assume { Resolve3.resolve _29 };
     assert { [@expl:assertion] [#"../sparse_array.rs" 125 26 125 46] UIntSize.to_int (SparseArray_Sparse_Type.sparse_n ( * self)) < UIntSize.to_int (SparseArray_Sparse_Type.sparse_size ( * self)) };
     _35 <- Borrow.borrow_mut (SparseArray_Sparse_Type.sparse_idx ( * self));

@@ -300,12 +300,15 @@ end
 module Core_Option_Impl44_Flatten_Interface
   type t
   use Core_Option_Option_Type as Core_Option_Option_Type
-  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+  clone CreusotContracts_Invariant_Inv_Stub as Inv1 with
     type t = Core_Option_Option_Type.t_option t
+  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+    type t = Core_Option_Option_Type.t_option (Core_Option_Option_Type.t_option t)
   val flatten (self : Core_Option_Option_Type.t_option (Core_Option_Option_Type.t_option t)) : Core_Option_Option_Type.t_option t
+    requires {Inv0.inv self}
     ensures { [#"../../../../creusot-contracts/src/std/option.rs" 108 16 108 59] self = Core_Option_Option_Type.C_None -> result = Core_Option_Option_Type.C_None }
     ensures { [#"../../../../creusot-contracts/src/std/option.rs" 17 0 114 1] self = Core_Option_Option_Type.C_None \/ self = Core_Option_Option_Type.C_Some result }
-    ensures { Inv0.inv result }
+    ensures { Inv1.inv result }
     
 end
 module TyInv_Trivial
@@ -344,6 +347,12 @@ module Option_TestOption
   use prelude.Int32
   use prelude.Borrow
   use Core_Option_Option_Type as Core_Option_Option_Type
+  clone CreusotContracts_Invariant_Inv_Interface as Inv10 with
+    type t = Core_Option_Option_Type.t_option (Core_Option_Option_Type.t_option int32)
+  clone TyInv_Trivial as TyInv_Trivial10 with
+    type t = Core_Option_Option_Type.t_option (Core_Option_Option_Type.t_option int32),
+    predicate Inv0.inv = Inv10.inv,
+    axiom .
   clone CreusotContracts_Invariant_Inv_Interface as Inv9 with
     type t = Core_Option_Option_Type.t_option int32
   clone TyInv_Trivial as TyInv_Trivial9 with
@@ -407,7 +416,8 @@ module Option_TestOption
   clone CreusotContracts_Std1_Num_Impl26_IsDefault as IsDefault0
   clone Core_Option_Impl44_Flatten_Interface as Flatten0 with
     type t = int32,
-    predicate Inv0.inv = Inv1.inv
+    predicate Inv0.inv = Inv10.inv,
+    predicate Inv1.inv = Inv1.inv
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = int32
   clone Core_Option_Impl3_Cloned_Interface as Cloned1 with

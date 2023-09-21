@@ -88,53 +88,6 @@ module C09Empty_Impl0_Produces
     ensures { result = produces self visited o }
     
 end
-module C09Empty_Impl0_ProducesRefl_Stub
-  type t
-  use seq.Seq
-  use C09Empty_Empty_Type as C09Empty_Empty_Type
-  clone C09Empty_Impl0_Produces_Stub as Produces0 with
-    type t = t
-  function produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
-end
-module C09Empty_Impl0_ProducesRefl_Interface
-  type t
-  use seq.Seq
-  use C09Empty_Empty_Type as C09Empty_Empty_Type
-  clone C09Empty_Impl0_Produces_Stub as Produces0 with
-    type t = t
-  function produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
-  val produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
-    ensures { [#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a }
-    ensures { result = produces_refl a }
-    
-  axiom produces_refl_spec : forall a : C09Empty_Empty_Type.t_empty t . [#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a
-end
-module C09Empty_Impl0_ProducesRefl
-  type t
-  use seq.Seq
-  use C09Empty_Empty_Type as C09Empty_Empty_Type
-  clone C09Empty_Impl0_Produces_Stub as Produces0 with
-    type t = t
-  function produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : () =
-    [#"../09_empty.rs" 25 4 25 10] ()
-  val produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
-    ensures { [#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a }
-    ensures { result = produces_refl a }
-    
-  axiom produces_refl_spec : forall a : C09Empty_Empty_Type.t_empty t . [#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a
-end
-module C09Empty_Impl0_ProducesRefl_Impl
-  type t
-  use seq.Seq
-  use C09Empty_Empty_Type as C09Empty_Empty_Type
-  clone C09Empty_Impl0_Produces as Produces0 with
-    type t = t
-  let rec ghost function produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
-    ensures { [#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a }
-    
-   = [@vc:do_not_keep_trace] [@vc:sp]
-    [#"../09_empty.rs" 25 4 25 10] ()
-end
 module CreusotContracts_Invariant_Inv_Stub
   type t
   predicate inv (_x : t)
@@ -160,13 +113,77 @@ module TyInv_Trivial
     type t = t
   axiom inv_trivial : forall self : t . Inv0.inv self = true
 end
+module C09Empty_Impl0_ProducesRefl_Stub
+  type t
+  use seq.Seq
+  use C09Empty_Empty_Type as C09Empty_Empty_Type
+  clone C09Empty_Impl0_Produces_Stub as Produces0 with
+    type t = t
+  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+    type t = C09Empty_Empty_Type.t_empty t
+  function produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
+end
+module C09Empty_Impl0_ProducesRefl_Interface
+  type t
+  use seq.Seq
+  use C09Empty_Empty_Type as C09Empty_Empty_Type
+  clone C09Empty_Impl0_Produces_Stub as Produces0 with
+    type t = t
+  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+    type t = C09Empty_Empty_Type.t_empty t
+  function produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
+  val produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
+    requires {[#"../09_empty.rs" 28 21 28 22] Inv0.inv a}
+    ensures { [#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a }
+    ensures { result = produces_refl a }
+    
+  axiom produces_refl_spec : forall a : C09Empty_Empty_Type.t_empty t . ([#"../09_empty.rs" 28 21 28 22] Inv0.inv a) -> ([#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a)
+end
+module C09Empty_Impl0_ProducesRefl
+  type t
+  use seq.Seq
+  use C09Empty_Empty_Type as C09Empty_Empty_Type
+  clone C09Empty_Impl0_Produces_Stub as Produces0 with
+    type t = t
+  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+    type t = C09Empty_Empty_Type.t_empty t
+  function produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : () =
+    [#"../09_empty.rs" 25 4 25 10] ()
+  val produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
+    requires {[#"../09_empty.rs" 28 21 28 22] Inv0.inv a}
+    ensures { [#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a }
+    ensures { result = produces_refl a }
+    
+  axiom produces_refl_spec : forall a : C09Empty_Empty_Type.t_empty t . ([#"../09_empty.rs" 28 21 28 22] Inv0.inv a) -> ([#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a)
+end
+module C09Empty_Impl0_ProducesRefl_Impl
+  type t
+  use seq.Seq
+  use C09Empty_Empty_Type as C09Empty_Empty_Type
+  clone CreusotContracts_Invariant_Inv_Interface as Inv0 with
+    type t = C09Empty_Empty_Type.t_empty t
+  clone TyInv_Trivial as TyInv_Trivial0 with
+    type t = C09Empty_Empty_Type.t_empty t,
+    predicate Inv0.inv = Inv0.inv,
+    axiom .
+  clone C09Empty_Impl0_Produces as Produces0 with
+    type t = t
+  let rec ghost function produces_refl [#"../09_empty.rs" 28 4 28 29] (a : C09Empty_Empty_Type.t_empty t) : ()
+    requires {[#"../09_empty.rs" 28 21 28 22] Inv0.inv a}
+    ensures { [#"../09_empty.rs" 27 14 27 39] Produces0.produces a (Seq.empty ) a }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../09_empty.rs" 25 4 25 10] ()
+end
 module C09Empty_Impl0_ProducesTrans_Stub
   type t
   use seq.Seq
   use seq.Seq
   use C09Empty_Empty_Type as C09Empty_Empty_Type
-  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+  clone CreusotContracts_Invariant_Inv_Stub as Inv1 with
     type t = Seq.seq t
+  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+    type t = C09Empty_Empty_Type.t_empty t
   clone C09Empty_Impl0_Produces_Stub as Produces0 with
     type t = t
   function produces_trans [#"../09_empty.rs" 35 4 35 90] (a : C09Empty_Empty_Type.t_empty t) (ab : Seq.seq t) (b : C09Empty_Empty_Type.t_empty t) (bc : Seq.seq t) (c : C09Empty_Empty_Type.t_empty t) : ()
@@ -177,8 +194,10 @@ module C09Empty_Impl0_ProducesTrans_Interface
   use seq.Seq
   use seq.Seq
   use C09Empty_Empty_Type as C09Empty_Empty_Type
-  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+  clone CreusotContracts_Invariant_Inv_Stub as Inv1 with
     type t = Seq.seq t
+  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+    type t = C09Empty_Empty_Type.t_empty t
   clone C09Empty_Impl0_Produces_Stub as Produces0 with
     type t = t
   function produces_trans [#"../09_empty.rs" 35 4 35 90] (a : C09Empty_Empty_Type.t_empty t) (ab : Seq.seq t) (b : C09Empty_Empty_Type.t_empty t) (bc : Seq.seq t) (c : C09Empty_Empty_Type.t_empty t) : ()
@@ -186,20 +205,25 @@ module C09Empty_Impl0_ProducesTrans_Interface
   val produces_trans [#"../09_empty.rs" 35 4 35 90] (a : C09Empty_Empty_Type.t_empty t) (ab : Seq.seq t) (b : C09Empty_Empty_Type.t_empty t) (bc : Seq.seq t) (c : C09Empty_Empty_Type.t_empty t) : ()
     requires {[#"../09_empty.rs" 32 15 32 32] Produces0.produces a ab b}
     requires {[#"../09_empty.rs" 33 15 33 32] Produces0.produces b bc c}
-    requires {[#"../09_empty.rs" 35 31 35 33] Inv0.inv ab}
-    requires {[#"../09_empty.rs" 35 61 35 63] Inv0.inv bc}
+    requires {[#"../09_empty.rs" 35 22 35 23] Inv0.inv a}
+    requires {[#"../09_empty.rs" 35 31 35 33] Inv1.inv ab}
+    requires {[#"../09_empty.rs" 35 52 35 53] Inv0.inv b}
+    requires {[#"../09_empty.rs" 35 61 35 63] Inv1.inv bc}
+    requires {[#"../09_empty.rs" 35 82 35 83] Inv0.inv c}
     ensures { [#"../09_empty.rs" 34 14 34 42] Produces0.produces a (Seq.(++) ab bc) c }
     ensures { result = produces_trans a ab b bc c }
     
-  axiom produces_trans_spec : forall a : C09Empty_Empty_Type.t_empty t, ab : Seq.seq t, b : C09Empty_Empty_Type.t_empty t, bc : Seq.seq t, c : C09Empty_Empty_Type.t_empty t . ([#"../09_empty.rs" 32 15 32 32] Produces0.produces a ab b) -> ([#"../09_empty.rs" 33 15 33 32] Produces0.produces b bc c) -> ([#"../09_empty.rs" 35 31 35 33] Inv0.inv ab) -> ([#"../09_empty.rs" 35 61 35 63] Inv0.inv bc) -> ([#"../09_empty.rs" 34 14 34 42] Produces0.produces a (Seq.(++) ab bc) c)
+  axiom produces_trans_spec : forall a : C09Empty_Empty_Type.t_empty t, ab : Seq.seq t, b : C09Empty_Empty_Type.t_empty t, bc : Seq.seq t, c : C09Empty_Empty_Type.t_empty t . ([#"../09_empty.rs" 32 15 32 32] Produces0.produces a ab b) -> ([#"../09_empty.rs" 33 15 33 32] Produces0.produces b bc c) -> ([#"../09_empty.rs" 35 22 35 23] Inv0.inv a) -> ([#"../09_empty.rs" 35 31 35 33] Inv1.inv ab) -> ([#"../09_empty.rs" 35 52 35 53] Inv0.inv b) -> ([#"../09_empty.rs" 35 61 35 63] Inv1.inv bc) -> ([#"../09_empty.rs" 35 82 35 83] Inv0.inv c) -> ([#"../09_empty.rs" 34 14 34 42] Produces0.produces a (Seq.(++) ab bc) c)
 end
 module C09Empty_Impl0_ProducesTrans
   type t
   use seq.Seq
   use seq.Seq
   use C09Empty_Empty_Type as C09Empty_Empty_Type
-  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+  clone CreusotContracts_Invariant_Inv_Stub as Inv1 with
     type t = Seq.seq t
+  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+    type t = C09Empty_Empty_Type.t_empty t
   clone C09Empty_Impl0_Produces_Stub as Produces0 with
     type t = t
   function produces_trans [#"../09_empty.rs" 35 4 35 90] (a : C09Empty_Empty_Type.t_empty t) (ab : Seq.seq t) (b : C09Empty_Empty_Type.t_empty t) (bc : Seq.seq t) (c : C09Empty_Empty_Type.t_empty t) : ()
@@ -209,31 +233,43 @@ module C09Empty_Impl0_ProducesTrans
   val produces_trans [#"../09_empty.rs" 35 4 35 90] (a : C09Empty_Empty_Type.t_empty t) (ab : Seq.seq t) (b : C09Empty_Empty_Type.t_empty t) (bc : Seq.seq t) (c : C09Empty_Empty_Type.t_empty t) : ()
     requires {[#"../09_empty.rs" 32 15 32 32] Produces0.produces a ab b}
     requires {[#"../09_empty.rs" 33 15 33 32] Produces0.produces b bc c}
-    requires {[#"../09_empty.rs" 35 31 35 33] Inv0.inv ab}
-    requires {[#"../09_empty.rs" 35 61 35 63] Inv0.inv bc}
+    requires {[#"../09_empty.rs" 35 22 35 23] Inv0.inv a}
+    requires {[#"../09_empty.rs" 35 31 35 33] Inv1.inv ab}
+    requires {[#"../09_empty.rs" 35 52 35 53] Inv0.inv b}
+    requires {[#"../09_empty.rs" 35 61 35 63] Inv1.inv bc}
+    requires {[#"../09_empty.rs" 35 82 35 83] Inv0.inv c}
     ensures { [#"../09_empty.rs" 34 14 34 42] Produces0.produces a (Seq.(++) ab bc) c }
     ensures { result = produces_trans a ab b bc c }
     
-  axiom produces_trans_spec : forall a : C09Empty_Empty_Type.t_empty t, ab : Seq.seq t, b : C09Empty_Empty_Type.t_empty t, bc : Seq.seq t, c : C09Empty_Empty_Type.t_empty t . ([#"../09_empty.rs" 32 15 32 32] Produces0.produces a ab b) -> ([#"../09_empty.rs" 33 15 33 32] Produces0.produces b bc c) -> ([#"../09_empty.rs" 35 31 35 33] Inv0.inv ab) -> ([#"../09_empty.rs" 35 61 35 63] Inv0.inv bc) -> ([#"../09_empty.rs" 34 14 34 42] Produces0.produces a (Seq.(++) ab bc) c)
+  axiom produces_trans_spec : forall a : C09Empty_Empty_Type.t_empty t, ab : Seq.seq t, b : C09Empty_Empty_Type.t_empty t, bc : Seq.seq t, c : C09Empty_Empty_Type.t_empty t . ([#"../09_empty.rs" 32 15 32 32] Produces0.produces a ab b) -> ([#"../09_empty.rs" 33 15 33 32] Produces0.produces b bc c) -> ([#"../09_empty.rs" 35 22 35 23] Inv0.inv a) -> ([#"../09_empty.rs" 35 31 35 33] Inv1.inv ab) -> ([#"../09_empty.rs" 35 52 35 53] Inv0.inv b) -> ([#"../09_empty.rs" 35 61 35 63] Inv1.inv bc) -> ([#"../09_empty.rs" 35 82 35 83] Inv0.inv c) -> ([#"../09_empty.rs" 34 14 34 42] Produces0.produces a (Seq.(++) ab bc) c)
 end
 module C09Empty_Impl0_ProducesTrans_Impl
   type t
   use seq.Seq
   use seq.Seq
-  clone CreusotContracts_Invariant_Inv_Interface as Inv0 with
+  clone CreusotContracts_Invariant_Inv_Interface as Inv1 with
     type t = Seq.seq t
-  clone TyInv_Trivial as TyInv_Trivial0 with
+  clone TyInv_Trivial as TyInv_Trivial1 with
     type t = Seq.seq t,
-    predicate Inv0.inv = Inv0.inv,
+    predicate Inv0.inv = Inv1.inv,
     axiom .
   use C09Empty_Empty_Type as C09Empty_Empty_Type
+  clone CreusotContracts_Invariant_Inv_Interface as Inv0 with
+    type t = C09Empty_Empty_Type.t_empty t
+  clone TyInv_Trivial as TyInv_Trivial0 with
+    type t = C09Empty_Empty_Type.t_empty t,
+    predicate Inv0.inv = Inv0.inv,
+    axiom .
   clone C09Empty_Impl0_Produces as Produces0 with
     type t = t
   let rec ghost function produces_trans [#"../09_empty.rs" 35 4 35 90] (a : C09Empty_Empty_Type.t_empty t) (ab : Seq.seq t) (b : C09Empty_Empty_Type.t_empty t) (bc : Seq.seq t) (c : C09Empty_Empty_Type.t_empty t) : ()
     requires {[#"../09_empty.rs" 32 15 32 32] Produces0.produces a ab b}
     requires {[#"../09_empty.rs" 33 15 33 32] Produces0.produces b bc c}
-    requires {[#"../09_empty.rs" 35 31 35 33] Inv0.inv ab}
-    requires {[#"../09_empty.rs" 35 61 35 63] Inv0.inv bc}
+    requires {[#"../09_empty.rs" 35 22 35 23] Inv0.inv a}
+    requires {[#"../09_empty.rs" 35 31 35 33] Inv1.inv ab}
+    requires {[#"../09_empty.rs" 35 52 35 53] Inv0.inv b}
+    requires {[#"../09_empty.rs" 35 61 35 63] Inv1.inv bc}
+    requires {[#"../09_empty.rs" 35 82 35 83] Inv0.inv c}
     ensures { [#"../09_empty.rs" 34 14 34 42] Produces0.produces a (Seq.(++) ab bc) c }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -251,18 +287,21 @@ module C09Empty_Impl0_Next_Interface
   use seq.Seq
   use C09Empty_Empty_Type as C09Empty_Empty_Type
   use Core_Option_Option_Type as Core_Option_Option_Type
-  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+  clone CreusotContracts_Invariant_Inv_Stub as Inv1 with
     type t = Core_Option_Option_Type.t_option t
   clone C09Empty_Impl0_Produces_Stub as Produces0 with
     type t = t
   clone C09Empty_Impl0_Completed_Stub as Completed0 with
     type t = t
+  clone CreusotContracts_Invariant_Inv_Stub as Inv0 with
+    type t = borrowed (C09Empty_Empty_Type.t_empty t)
   val next [#"../09_empty.rs" 41 4 41 35] (self : borrowed (C09Empty_Empty_Type.t_empty t)) : Core_Option_Option_Type.t_option t
+    requires {[#"../09_empty.rs" 41 17 41 21] Inv0.inv self}
     ensures { [#"../09_empty.rs" 37 14 40 5] match (result) with
       | Core_Option_Option_Type.C_None -> Completed0.completed self
       | Core_Option_Option_Type.C_Some v -> Produces0.produces ( * self) (Seq.singleton v) ( ^ self)
       end }
-    ensures { [#"../09_empty.rs" 41 26 41 35] Inv0.inv result }
+    ensures { [#"../09_empty.rs" 41 26 41 35] Inv1.inv result }
     
 end
 module C09Empty_Impl0_Next
@@ -270,13 +309,19 @@ module C09Empty_Impl0_Next
   use prelude.Borrow
   use seq.Seq
   use Core_Option_Option_Type as Core_Option_Option_Type
-  clone CreusotContracts_Invariant_Inv_Interface as Inv0 with
+  clone CreusotContracts_Invariant_Inv_Interface as Inv1 with
     type t = Core_Option_Option_Type.t_option t
-  clone TyInv_Trivial as TyInv_Trivial0 with
+  clone TyInv_Trivial as TyInv_Trivial1 with
     type t = Core_Option_Option_Type.t_option t,
-    predicate Inv0.inv = Inv0.inv,
+    predicate Inv0.inv = Inv1.inv,
     axiom .
   use C09Empty_Empty_Type as C09Empty_Empty_Type
+  clone CreusotContracts_Invariant_Inv_Interface as Inv0 with
+    type t = borrowed (C09Empty_Empty_Type.t_empty t)
+  clone TyInv_Trivial as TyInv_Trivial0 with
+    type t = borrowed (C09Empty_Empty_Type.t_empty t),
+    predicate Inv0.inv = Inv0.inv,
+    axiom .
   clone C09Empty_Impl0_Produces as Produces0 with
     type t = t
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
@@ -285,11 +330,12 @@ module C09Empty_Impl0_Next
     type t = t,
     predicate Resolve0.resolve = Resolve0.resolve
   let rec cfg next [#"../09_empty.rs" 41 4 41 35] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (C09Empty_Empty_Type.t_empty t)) : Core_Option_Option_Type.t_option t
+    requires {[#"../09_empty.rs" 41 17 41 21] Inv0.inv self}
     ensures { [#"../09_empty.rs" 37 14 40 5] match (result) with
       | Core_Option_Option_Type.C_None -> Completed0.completed self
       | Core_Option_Option_Type.C_Some v -> Produces0.produces ( * self) (Seq.singleton v) ( ^ self)
       end }
-    ensures { [#"../09_empty.rs" 41 26 41 35] Inv0.inv result }
+    ensures { [#"../09_empty.rs" 41 26 41 35] Inv1.inv result }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : Core_Option_Option_Type.t_option t;
@@ -298,6 +344,7 @@ module C09Empty_Impl0_Next
     goto BB0
   }
   BB0 {
+    assert { [@expl:type invariant] Inv0.inv self };
     assume { Resolve0.resolve self };
     _0 <- Core_Option_Option_Type.C_None;
     return _0
@@ -348,9 +395,9 @@ module C09Empty_Impl0
     predicate Resolve0.resolve = Resolve0.resolve
   clone C09Empty_Impl0_Produces as Produces0 with
     type t = t
-  goal produces_trans_refn : [#"../09_empty.rs" 35 4 35 90] forall a : C09Empty_Empty_Type.t_empty t . forall ab : Seq.seq t . forall b : C09Empty_Empty_Type.t_empty t . forall bc : Seq.seq t . forall c : C09Empty_Empty_Type.t_empty t . Inv0.inv c /\ Inv1.inv bc /\ Inv0.inv b /\ Inv1.inv ab /\ Inv0.inv a /\ Produces0.produces b bc c /\ Produces0.produces a ab b -> Inv1.inv bc /\ Inv1.inv ab /\ Produces0.produces b bc c /\ Produces0.produces a ab b /\ (forall result : () . Produces0.produces a (Seq.(++) ab bc) c -> Produces0.produces a (Seq.(++) ab bc) c)
-  goal produces_refl_refn : [#"../09_empty.rs" 28 4 28 29] forall a : C09Empty_Empty_Type.t_empty t . Inv0.inv a -> (forall result : () . Produces0.produces a (Seq.empty ) a -> Produces0.produces a (Seq.empty ) a)
-  goal next_refn : [#"../09_empty.rs" 41 4 41 35] forall self : borrowed (C09Empty_Empty_Type.t_empty t) . Inv2.inv self -> (forall result : Core_Option_Option_Type.t_option t . Inv3.inv result /\ match (result) with
+  goal produces_trans_refn : [#"../09_empty.rs" 35 4 35 90] forall a : C09Empty_Empty_Type.t_empty t . forall ab : Seq.seq t . forall b : C09Empty_Empty_Type.t_empty t . forall bc : Seq.seq t . forall c : C09Empty_Empty_Type.t_empty t . Inv0.inv c /\ Inv1.inv bc /\ Inv0.inv b /\ Inv1.inv ab /\ Inv0.inv a /\ Produces0.produces b bc c /\ Produces0.produces a ab b -> Inv0.inv c /\ Inv1.inv bc /\ Inv0.inv b /\ Inv1.inv ab /\ Inv0.inv a /\ Produces0.produces b bc c /\ Produces0.produces a ab b /\ (forall result : () . Produces0.produces a (Seq.(++) ab bc) c -> Produces0.produces a (Seq.(++) ab bc) c)
+  goal produces_refl_refn : [#"../09_empty.rs" 28 4 28 29] forall a : C09Empty_Empty_Type.t_empty t . Inv0.inv a -> Inv0.inv a /\ (forall result : () . Produces0.produces a (Seq.empty ) a -> Produces0.produces a (Seq.empty ) a)
+  goal next_refn : [#"../09_empty.rs" 41 4 41 35] forall self : borrowed (C09Empty_Empty_Type.t_empty t) . Inv2.inv self -> Inv2.inv self /\ (forall result : Core_Option_Option_Type.t_option t . Inv3.inv result /\ match (result) with
     | Core_Option_Option_Type.C_None -> Completed0.completed self
     | Core_Option_Option_Type.C_Some v -> Produces0.produces ( * self) (Seq.singleton v) ( ^ self)
     end -> Inv3.inv result /\ match (result) with
