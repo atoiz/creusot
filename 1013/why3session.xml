@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"https://www.why3.org/why3session.dtd">
+<why3session shape_version="6">
+<prover id="0" name="CVC5" version="1.0.5" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="mlcfg" proved="true">
+<path name=".."/><path name="1013.mlcfg"/>
+<theory name="C1013_SetZero" proved="true">
+ <goal name="set_zero&#39;vc" expl="VC for set_zero" proved="true">
+ <proof prover="0"><result status="valid" time="0.008443" steps="776"/></proof>
+ </goal>
+</theory>
+</file>
+</why3session>

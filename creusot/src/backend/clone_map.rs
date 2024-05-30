@@ -582,6 +582,7 @@ impl<'tcx> Dependencies<'tcx> {
                 (GraphDepth::Shallow, _) => CloneLevel::Signature,
             };
 
+            debug!("cloning {node:?} with level {level_of_item:?}");
             let decl = elab.build_clone(ctx, &mut self, node, level_of_item);
             decls.extend(decl);
         }

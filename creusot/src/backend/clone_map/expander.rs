@@ -86,10 +86,12 @@ impl<'a, 'tcx> Expander<'a, 'tcx> {
                     self.clone_graph.info_mut(key).opaque();
                 }
 
+                debug!("Is {key:?} transparent from {self_key:?} (opacity={:?})?", ctx.opacity(did));
                 if self_key
                     .did()
                     .is_some_and(|(self_did, _)| !ctx.is_transparent_from(did, self_did))
                 {
+                    debug!("{key:?} is not transparent from {self_key:?}, making opaque (opacity={:?})", ctx.opacity(did));
                     self.clone_graph.info_mut(key).opaque();
                 }
 

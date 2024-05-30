@@ -58,16 +58,25 @@ impl<'tcx> Metadata<'tcx> {
             }
         }
     }
+
+    pub(crate) fn opacity(&self, item: DefId) -> Option<Opacity> {
+        self.crates.get(&item.krate)?.opacity(item)
+    }
 }
 
 pub struct CrateMetadata<'tcx> {
     terms: IndexMap<DefId, Term<'tcx>>,
     creusot_items: CreusotItems,
+    opacity: HashMap<DefId, Opacity>,
 }
 
 impl<'tcx> CrateMetadata<'tcx> {
     pub(crate) fn new() -> Self {
-        Self { terms: Default::default(), creusot_items: Default::default() }
+        Self {
+            terms: Default::default(),
+            creusot_items: Default::default(),
+            opacity: Default::default(),
+        }
     }
 
     pub(crate) fn term(&self, def_id: DefId) -> Option<&Term<'tcx>> {
@@ -103,9 +112,28 @@ impl<'tcx> CrateMetadata<'tcx> {
             meta.creusot_items = metadata.creusot_items;
 
             externs = metadata.extern_specs;
+
+            let op : Vec<_> = metadata
+                .opacity
+                .iter()
+                .filter(|(d, _)| tcx.def_path_str(d).as_str().contains("resolve"))
+                .copied()
+                .collect();
+
+            debug!("metadata has {:?} opacity entries", metadata.opacity.len());
+
+            for op in op {
+                debug!("loaded opacity {:?} {:?}", op.0, op.1)
+            }
+
+            meta.opacity = metadata.opacity.into_iter().collect();
         }
 
         (meta, externs)
+    }
+
+    fn opacity(&self, item: DefId) -> Option<Opacity> {
+        self.opacity.get(&item).copied()
     }
 }
 
@@ -117,6 +145,8 @@ impl<'tcx> CrateMetadata<'tcx> {
 pub(crate) struct BinaryMetadata<'tcx> {
     terms: Vec<(DefId, Term<'tcx>)>,
 
+    opacity: Vec<(DefId, Opacity)>,
+
     creusot_items: CreusotItems,
 
     extern_specs: HashMap<DefId, ExternSpec<'tcx>>,
@@ -126,6 +156,7 @@ impl<'tcx> BinaryMetadata<'tcx> {
     pub(crate) fn from_parts(
         terms: &IndexMap<DefId, Term<'tcx>>,
         items: &CreusotItems,
+        opacity: &HashMap<DefId, Opacity>,
         extern_specs: &HashMap<DefId, ExternSpec<'tcx>>,
     ) -> Self {
         let terms = terms
@@ -134,7 +165,20 @@ impl<'tcx> BinaryMetadata<'tcx> {
             .map(|(id, t)| (*id, t.clone()))
             .collect();
 
-        BinaryMetadata { terms, creusot_items: items.clone(), extern_specs: extern_specs.clone() }
+        let opacity = opacity
+            .iter()
+            .filter(|(def_id, _)| def_id.is_local())
+            .map(|(id, t)| (*id, t.clone()))
+            .collect();
+
+        trace!("dumping {opacity:?}");
+
+        BinaryMetadata {
+            terms,
+            creusot_items: items.clone(),
+            opacity,
+            extern_specs: extern_specs.clone(),
+        }
     }
 }
 
@@ -175,7 +219,7 @@ fn load_binary_metadata<'tcx>(
     match File::open(path).and_then(|mut file| file.read_to_end(&mut blob)) {
         Ok(_) => (),
         Err(e) => {
-            warn!("could not read metadata for crate `{:?}`: {:?}", tcx.crate_name(cnum), e);
+            warn!("could not read metadata for crate `{:?}`: {:?} {}", tcx.crate_name(cnum), e, path.display());
             return None;
         }
     }

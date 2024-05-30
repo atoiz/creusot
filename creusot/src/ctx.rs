@@ -27,6 +27,7 @@ use rustc_hir::{
     def_id::{DefId, LocalDefId},
 };
 use rustc_infer::traits::{Obligation, ObligationCause};
+use rustc_macros::{TyDecodable, TyEncodable};
 use rustc_middle::{
     mir::{Body, Promoted},
     thir,
@@ -100,7 +101,7 @@ pub struct TranslationCtx<'tcx> {
     closure_contract: HashMap<DefId, ClosureContract<'tcx>>,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, TyEncodable, TyDecodable)]
 pub(crate) struct Opacity(Visibility<DefId>);
 
 impl Opacity {
@@ -294,17 +295,25 @@ impl<'tcx, 'sess> TranslationCtx<'tcx> {
     }
 
     fn mk_opacity(&self, item: DefId) -> Opacity {
+        if !item.is_local() && let Some(opacity) = self.externs.opacity(item) {
+            debug!("mk_opacity non-local {item:?} {opacity:?}");
+            return opacity;
+        }
+
         if !matches!(
             util::item_type(self.tcx, item),
             ItemType::Predicate { .. } | ItemType::Logic { .. }
         ) {
+            debug!("mk_opacity {item:?} public");
             return Opacity(Visibility::Public);
         };
 
+        // debug!("opacity_witness_name={:?}", util::opacity_witness_name(self.tcx, item));
         let witness = util::opacity_witness_name(self.tcx, item)
             .and_then(|nm| self.creusot_item(nm))
             .map(|id| self.visibility(id))
             .unwrap_or_else(|| Visibility::Restricted(parent_module(self.tcx, item)));
+            debug!("mk_opacity {item:?} restricted {witness:?}");
         Opacity(witness)
     }
 
@@ -315,7 +324,7 @@ impl<'tcx, 'sess> TranslationCtx<'tcx> {
     }
 
     pub(crate) fn metadata(&self) -> BinaryMetadata<'tcx> {
-        BinaryMetadata::from_parts(&self.terms, &self.creusot_items, &self.extern_specs)
+        BinaryMetadata::from_parts(&self.terms, &self.creusot_items, &self.opacity, &self.extern_specs)
     }
 
     pub(crate) fn creusot_item(&self, name: Symbol) -> Option<DefId> {
